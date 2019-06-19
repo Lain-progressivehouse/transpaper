@@ -4,14 +4,16 @@ from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from io import StringIO
 
-
-def get_pdf_strings(file):
+def get_pdf_strings(file, isFile=True):
     rsrcmgr = PDFResourceManager()
     rettxt = StringIO()
     laparams = LAParams()
     device = TextConverter(rsrcmgr, rettxt, codec="utf-8", laparams=laparams)
     # 処理するPDFを開く
-    fp = open(file, 'rb')
+    if isFile:
+        fp = open(file, 'rb')
+    else:
+        fp = file.stream
     interpreter = PDFPageInterpreter(rsrcmgr, device)
 
     # maxpages：ページ指定（0は全ページ）
