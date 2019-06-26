@@ -3,14 +3,18 @@ from pdfminer.converter import TextConverter
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from io import StringIO
+import sys
+import re
+import os
 
-def get_pdf_strings(file, isFile=True):
+
+def get_pdf_strings(file, is_file=True):
     rsrcmgr = PDFResourceManager()
     rettxt = StringIO()
     laparams = LAParams()
     device = TextConverter(rsrcmgr, rettxt, codec="utf-8", laparams=laparams)
     # 処理するPDFを開く
-    if isFile:
+    if is_file:
         fp = open(file, 'rb')
     else:
         fp = file.stream
@@ -27,3 +31,16 @@ def get_pdf_strings(file, isFile=True):
     rettxt.close()
 
     return document
+
+
+def save_pdf_to_txt(file):
+    doc = get_pdf_strings(file)
+    doc = re.sub(r"\s[\s]+", " ", re.sub("[\n\t]", " ", doc))
+
+    with open(os.path.splitext(file)[0] + ".txt", mode="w") as f:
+        f.write(". \n".join(doc.split(". ")))
+
+
+if __name__ == '__main__':
+    args = sys.argv
+    save_pdf_to_txt(args[1])

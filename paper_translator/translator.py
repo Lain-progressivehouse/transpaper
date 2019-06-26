@@ -6,9 +6,11 @@ import sys
 import time
 from tqdm import tqdm
 
-def get_translate_for_app(file):
-    doc = pdf_reader.get_pdf_strings(file, isFile=False)
+
+def get_translate_for_app(file, is_file=True):
+    doc = pdf_reader.get_pdf_strings(file, is_file)
     doc = re.sub(r"\s[\s]+", " ", re.sub("[\n\t]", " ", doc))
+    doc = re.sub("\0", " ", doc)
 
     translator = Translator()
 
@@ -19,9 +21,14 @@ def get_translate_for_app(file):
 
     # 一回に翻訳できる文字数は5000まで
     for d in tqdm(doc.split(". ")):
-        if len(sentences) + len(d) > 5000:
+        if len(sentences) + len(d) > 4800:
             sentences = sentences[:-1]
-            translate_sentences = translator.translate(sentences, dest="ja").text + "\n"
+            try:
+                translate_sentences = translator.translate(sentences, dest="ja").text + "\n"
+            except:
+                print("Error")
+                # with open(os.path.splitext(file)[0] + "_err.txt", mode="w") as f:
+                #     f.write(sentences)
             for s, t in zip(sentences.split("\n"), translate_sentences.split("\n")):
                 write_list.append(s)
                 write_list.append(t + "\n")
@@ -39,47 +46,14 @@ def get_translate_for_app(file):
 
     print("translate-end")
 
-    # with open(os.path.splitext(file)[0] + ".txt", mode="w") as f:
-    #     f.write("\n".join(write_list))
     return "\n".join(write_list)
 
-def get_translate(file):
-    doc = pdf_reader.get_pdf_strings(file)
-    doc = re.sub(r"\s[\s]+", " ", re.sub("[\n\t]", " ", doc))
 
-    translator = Translator()
-
-    write_list = []
-    sentences = ""
-
-    print("translate-start")
-
-    # 一回に翻訳できる文字数は5000まで
-    for d in tqdm(doc.split(". ")):
-        if len(sentences) + len(d) > 5000:
-            sentences = sentences[:-1]
-            translate_sentences = translator.translate(sentences, dest="ja").text + "\n"
-            for s, t in zip(sentences.split("\n"), translate_sentences.split("\n")):
-                write_list.append(s)
-                write_list.append(t + "\n")
-
-            sentences = ""
-            time.sleep(1)
-
-        sentences += d + ". " + "\n"
-
-    sentences = sentences[:-1]
-    translate_sentences = translator.translate(sentences, dest="ja").text + "\n"
-    for s, t in zip(sentences.split("\n"), translate_sentences.split("\n")):
-        write_list.append(s)
-        write_list.append(t + "\n")
-
-    print("translate-end")
-
+def save_txt(file):
     with open(os.path.splitext(file)[0] + ".txt", mode="w") as f:
-        f.write("\n".join(write_list))
+        f.write(get_translate_for_app(file))
 
 
 if __name__ == '__main__':
     args = sys.argv
-    get_translate(args[1])
+    save_txt(args[1])
