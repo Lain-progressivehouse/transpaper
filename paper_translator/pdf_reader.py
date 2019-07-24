@@ -1,5 +1,5 @@
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import TextConverter
+from pdfminer.converter import TextConverter, PDFPageAggregator
 from pdfminer.layout import LAParams
 from pdfminer.pdfpage import PDFPage
 from io import StringIO
@@ -13,6 +13,8 @@ def get_pdf_strings(file, is_file=True):
     rettxt = StringIO()
     laparams = LAParams()
     device = TextConverter(rsrcmgr, rettxt, codec="utf-8", laparams=laparams)
+    # ページを集めるPageAggregatorオブジェクトを作成。
+    pager = PDFPageAggregator(rsrcmgr, laparams=laparams)
     # 処理するPDFを開く
     if is_file:
         fp = open(file, 'rb')
