@@ -5,7 +5,7 @@
 
 ***デモ***
 
-https://raw.githubusercontent.com/wiki/Lain-progressivehouse/transpaper/images/transpaper.gif
+![demo](https://raw.githubusercontent.com/wiki/Lain-progressivehouse/transpaper/images/transpaper.gif)
 
 ## 使い方
 
@@ -23,6 +23,5 @@ $ python transpaper_app.py
 ## 作者
 mail to: lain.progressivehouse@gmail.com
 
-## ライセンス
-
-[MIT](http://TomoakiTANAKA.mit-license.org)</blockquote>
+## License
+MIT
